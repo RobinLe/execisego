@@ -1,2 +1,2 @@
 # execisego
-my golang execise
+my go execise code

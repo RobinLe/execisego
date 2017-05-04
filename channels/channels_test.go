@@ -21,3 +21,15 @@ func TestChannelTrans(t *testing.T) {
 func TestChannelSelect(t *testing.T) {
 	ChannelSelect()
 }
+
+func TestChannelTimeout(t *testing.T) {
+	ChannelTimeout()
+}
+
+func TestChannelClose(t *testing.T) {
+	ChannelClose()
+}
+
+func TestChannelRange(t *testing.T) {
+	ChannelRange()
+}

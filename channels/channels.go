@@ -81,3 +81,68 @@ func ChannelSelect() {
 		}
 	}
 }
+
+// ChannelTimeout channel with timeout
+func ChannelTimeout() {
+	c1 := make(chan string, 1)
+	go func() {
+		time.Sleep(time.Second * 2)
+		c1 <- "c1"
+	}()
+	select {
+	case res := <-c1:
+		fmt.Println(res)
+	case <-time.After(time.Second * 1):
+		fmt.Println("timeout")
+	}
+
+	c2 := make(chan string, 1)
+	go func() {
+		time.Sleep(time.Second * 2)
+		c2 <- "c2"
+	}()
+	select {
+	case res := <-c2:
+		fmt.Println(res)
+	case <-time.After(time.Second * 3):
+		fmt.Println("timeout")
+	}
+}
+
+// ChannelClose close channel
+func ChannelClose() {
+	jobs := make(chan int, 3)
+	done := make(chan bool, 1)
+	go func() {
+		for {
+			j, more := <-jobs
+			if more {
+				fmt.Println("receive", j, more)
+			} else {
+				fmt.Println("receive all")
+				done <- true
+				return
+			}
+		}
+	}()
+
+	for i := 0; i < 3; i++ {
+		jobs <- i
+	}
+
+	for i := 0; i < 2; i++ {
+		jobs <- i
+	}
+	close(jobs)
+}
+
+// ChannelRange range of channel
+func ChannelRange() {
+	channel := make(chan int, 2)
+	channel <- 1
+	channel <- 2
+	close(channel)
+	for i := range channel {
+		fmt.Println(i)
+	}
+}
