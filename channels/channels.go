@@ -58,6 +58,35 @@ func ChannelTrans() {
 	fmt.Println(<-pong)
 }
 
+func counter(in chan<- int) {
+	for i := 0; i < 10; i++ {
+		in <- i
+		fmt.Println("in", i)
+		time.Sleep(time.Second * 2)
+	}
+	close(in)
+}
+
+func squarer(out chan<- int, in <-chan int) {
+	for i := range in {
+		out <- i
+		fmt.Println("out", i)
+		time.Sleep(time.Second * 2)
+	}
+	close(out)
+}
+
+// ChannelTrans2 direction of chan
+func ChannelTrans2() {
+	in := make(chan int, 10)
+	out := make(chan int, 10)
+	go counter(in)
+	go squarer(out, in)
+	for i := range out {
+		fmt.Println("result", i)
+	}
+}
+
 // ChannelSelect select channel
 func ChannelSelect() {
 	c1 := make(chan string, 1)
@@ -144,5 +173,50 @@ func ChannelRange() {
 	close(channel)
 	for i := range channel {
 		fmt.Println(i)
+	}
+}
+
+// ChannelRange2 range of channel test
+func ChannelRange2() {
+	channel := make(chan int, 10)
+	go func() {
+		for i := 0; i < 10; i++ {
+			channel <- i
+			fmt.Println("In channel", i)
+			time.Sleep(time.Second * 2)
+		}
+		close(channel)
+	}()
+
+	for j := range channel {
+		fmt.Println("Out channel", j)
+	}
+}
+
+func worker2(id int, jobs <-chan int, result chan<- int) {
+	for j := range jobs {
+		fmt.Println("worker", id, "started job", j)
+		time.Sleep(time.Second * 10)
+		result <- j
+		fmt.Println("worker", id, "finished job", j)
+	}
+}
+
+// WorkerPool worker pool
+func WorkerPool() {
+	jobs := make(chan int, 10)
+	result := make(chan int, 10)
+
+	for i := 0; i < 3; i++ {
+		go worker2(i, jobs, result)
+	}
+
+	for j := 0; j < 5; j++ {
+		jobs <- j
+	}
+	close(jobs)
+
+	for j := 0; j < 5; j++ {
+		<-result
 	}
 }

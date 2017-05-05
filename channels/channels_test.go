@@ -18,6 +18,10 @@ func TestChannelTrans(t *testing.T) {
 	ChannelTrans()
 }
 
+func TestChannelTrans2(t *testing.T) {
+	ChannelTrans2()
+}
+
 func TestChannelSelect(t *testing.T) {
 	ChannelSelect()
 }
@@ -32,4 +36,12 @@ func TestChannelClose(t *testing.T) {
 
 func TestChannelRange(t *testing.T) {
 	ChannelRange()
+}
+
+func TestChannelRange2(t *testing.T) {
+	ChannelRange2()
+}
+
+func TestChannelPool(t *testing.T) {
+	WorkerPool()
 }
