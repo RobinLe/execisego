@@ -11,3 +11,7 @@ func TestStack(t *testing.T) {
 func TestQueue(t *testing.T) {
 	QueueTest()
 }
+
+func TestTree(t *testing.T) {
+	TreeTest()
+}

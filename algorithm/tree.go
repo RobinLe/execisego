@@ -5,79 +5,67 @@ import (
 	"math/rand"
 )
 
-// A Tree is a binary tree with integer values.
-type Tree struct {
-	Left  *Tree
-	Value int
-	Right *Tree
+// BinaryTree is a binary tree with integer values.
+type BinaryTree struct {
+	Value      int
+	LeftChild  *BinaryTree
+	RightChild *BinaryTree
 }
 
-// Walk traverses a tree depth-first,
-// sending each Value on a channel.
-func Walk(t *Tree, ch chan int) {
-	if t == nil {
+// NewBinaryTree return a new binary tree
+func NewBinaryTree(n int) *BinaryTree {
+	var t *BinaryTree
+	for _, i := range rand.Perm(n) {
+		t = insert(t, rand.Intn(100+i))
+	}
+	// fmt.Println(t.Value)
+	return t
+}
+
+func insert(tree *BinaryTree, value int) *BinaryTree {
+	if tree == nil {
+		return &BinaryTree{value, nil, nil}
+	}
+	if value < tree.Value {
+		tree.LeftChild = insert(tree.LeftChild, value)
+		return tree
+	}
+	tree.RightChild = insert(tree.RightChild, value)
+	return tree
+}
+
+func PreOrder(tree *BinaryTree) {
+	if tree == nil {
 		return
 	}
-	Walk(t.Left, ch)
-	ch <- t.Value
-	Walk(t.Right, ch)
+	fmt.Print(tree.Value, ",")
+	PreOrder(tree.LeftChild)
+	PreOrder(tree.RightChild)
 }
 
-// Walker launches Walk in a new goroutine,
-// and returns a read-only channel of values.
-func Walker(t *Tree) <-chan int {
-	ch := make(chan int)
-	go func() {
-		Walk(t, ch)
-		close(ch)
-	}()
-	return ch
-}
-
-// Compare reads values from two Walkers
-// that run simultaneously, and returns true
-// if t1 and t2 have the same contents.
-func Compare(t1, t2 *Tree) bool {
-	c1, c2 := Walker(t1), Walker(t2)
-	for {
-		v1, ok1 := <-c1
-		v2, ok2 := <-c2
-		if !ok1 || !ok2 {
-			return ok1 == ok2
-		}
-		if v1 != v2 {
-			break
-		}
+func InOrder(tree *BinaryTree) {
+	if tree == nil {
+		return
 	}
-	return false
+	InOrder(tree.LeftChild)
+	fmt.Print(tree.Value, ",")
+	InOrder(tree.RightChild)
 }
 
-// New returns a new, random binary tree
-// holding the values 1k, 2k, ..., nk.
-func New(n, k int) *Tree {
-	var t *Tree
-	for _, v := range rand.Perm(n) {
-		t = insert(t, (1+v)*k)
+func PostOrder(tree *BinaryTree) {
+	if tree == nil {
+		return
 	}
-	return t
+	PostOrder(tree.LeftChild)
+	PostOrder(tree.RightChild)
+	fmt.Print(tree.Value, ",")
 }
 
-func insert(t *Tree, v int) *Tree {
-	if t == nil {
-		return &Tree{nil, v, nil}
-	}
-	if v < t.Value {
-		t.Left = insert(t.Left, v)
-		return t
-	}
-	t.Right = insert(t.Right, v)
-	return t
-}
-
-func main() {
-	t1 := New(100, 1)
-	fmt.Println(Compare(t1, New(100, 1)), "Same Contents")
-	fmt.Println(Compare(t1, New(99, 1)), "Differing Sizes")
-	fmt.Println(Compare(t1, New(100, 2)), "Differing Values")
-	fmt.Println(Compare(t1, New(101, 2)), "Dissimilar")
+func TreeTest() {
+	tree := NewBinaryTree(3)
+	InOrder(tree)
+	fmt.Println()
+	PreOrder(tree)
+	fmt.Println()
+	PostOrder(tree)
 }
