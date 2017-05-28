@@ -38,9 +38,18 @@ func PreOrder(tree *BinaryTree) {
 	if tree == nil {
 		return
 	}
-	fmt.Print(tree.Value, ",")
+	fmt.Println(tree.Value)
 	PreOrder(tree.LeftChild)
 	PreOrder(tree.RightChild)
+}
+
+func PreOrder2(tree *BinaryTree) {
+	// for stack is not empty
+	for tree != nil {
+		fmt.Println(tree.Value)
+		// stack.push(tree.RightChild)
+		tree = tree.LeftChild
+	}
 }
 
 func InOrder(tree *BinaryTree) {
@@ -48,7 +57,7 @@ func InOrder(tree *BinaryTree) {
 		return
 	}
 	InOrder(tree.LeftChild)
-	fmt.Print(tree.Value, ",")
+	fmt.Println(tree.Value)
 	InOrder(tree.RightChild)
 }
 
@@ -58,14 +67,15 @@ func PostOrder(tree *BinaryTree) {
 	}
 	PostOrder(tree.LeftChild)
 	PostOrder(tree.RightChild)
-	fmt.Print(tree.Value, ",")
+	fmt.Println(tree.Value)
 }
 
 func TreeTest() {
 	tree := NewBinaryTree(3)
-	InOrder(tree)
-	fmt.Println()
+	fmt.Println("Pre Order")
 	PreOrder(tree)
-	fmt.Println()
+	fmt.Println("In Order")
+	InOrder(tree)
+	fmt.Println("Post Order")
 	PostOrder(tree)
 }
