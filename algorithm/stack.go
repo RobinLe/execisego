@@ -4,13 +4,6 @@ import (
 	"fmt"
 )
 
-// Stack last in first out LIFO struct
-type Stack struct {
-	Elements []*Element
-	Top      int
-	Length   int
-}
-
 // NewStack create new stack
 func NewStack(length int) *Stack {
 	return &Stack{Length: length}

@@ -2,80 +2,74 @@ package algorithm
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
+	"strings"
 )
 
-// BinaryTree is a binary tree with integer values.
-type BinaryTree struct {
-	Value      int
-	LeftChild  *BinaryTree
-	RightChild *BinaryTree
-}
-
-// NewBinaryTree return a new binary tree
-func NewBinaryTree(n int) *BinaryTree {
-	var t *BinaryTree
+// NewBTree return a new binary tree
+func NewBTree(n int) *BTree {
+	var tree *BTree
 	for _, i := range rand.Perm(n) {
-		t = insert(t, rand.Intn(100+i))
+		tree = insert(tree, rand.Intn(100+i))
 	}
-	// fmt.Println(t.Value)
-	return t
-}
-
-func insert(tree *BinaryTree, value int) *BinaryTree {
-	if tree == nil {
-		return &BinaryTree{value, nil, nil}
-	}
-	if value < tree.Value {
-		tree.LeftChild = insert(tree.LeftChild, value)
-		return tree
-	}
-	tree.RightChild = insert(tree.RightChild, value)
 	return tree
 }
 
-func PreOrder(tree *BinaryTree) {
+// insert node to btree
+func insert(tree *BTree, data int) *BTree {
 	if tree == nil {
-		return
+		return &BTree{data, nil, nil}
 	}
-	fmt.Println(tree.Value)
-	PreOrder(tree.LeftChild)
-	PreOrder(tree.RightChild)
+	if rand.Intn(20)%2 == 0 {
+		tree.LeftChild = insert(tree.LeftChild, data)
+		return tree
+	}
+	tree.RightChild = insert(tree.RightChild, data)
+	return tree
 }
 
-func PreOrder2(tree *BinaryTree) {
-	// for stack is not empty
-	for tree != nil {
-		fmt.Println(tree.Value)
-		// stack.push(tree.RightChild)
-		tree = tree.LeftChild
+// IsBTS binary tree is search tree or not
+// inorder traversal and keep track the previous node vale
+func IsBTS(tree *BTree, prev **BTree) bool {
+	if tree != nil {
+		if !IsBTS(tree.LeftChild, prev) {
+			return false
+		}
+		// compare previous node data with current data
+		if *prev != nil && (*prev).Data >= tree.Data {
+			return false
+		}
+		// save node data and keep track
+		*prev = tree
+		return IsBTS(tree.RightChild, prev)
 	}
+	return true
 }
 
-func InOrder(tree *BinaryTree) {
-	if tree == nil {
-		return
+// PrintBTree print btree
+func PrintBTree(tree *BTree) {
+	q := NewQueue(20)
+	q.enQueue(tree)
+	depth := tree.Height()
+	for !q.IsEmpty() {
+		space := strings.Repeat(" ", int(math.Pow(2.0, float64(depth-1))))
+		fmt.Print(space)
+		depth--
+		count := q.Rear - q.Front
+		for i := 0; i < count; i++ {
+			tree := q.deQueue()
+			fmt.Print(tree.Data)
+			if tree.LeftChild != nil {
+				q.enQueue(tree.LeftChild)
+				fmt.Print("/")
+			}
+			if tree.RightChild != nil {
+				q.enQueue(tree.RightChild)
+				fmt.Print("\\")
+			}
+			fmt.Print(space)
+		}
+		fmt.Println()
 	}
-	InOrder(tree.LeftChild)
-	fmt.Println(tree.Value)
-	InOrder(tree.RightChild)
-}
-
-func PostOrder(tree *BinaryTree) {
-	if tree == nil {
-		return
-	}
-	PostOrder(tree.LeftChild)
-	PostOrder(tree.RightChild)
-	fmt.Println(tree.Value)
-}
-
-func TreeTest() {
-	tree := NewBinaryTree(3)
-	fmt.Println("Pre Order")
-	PreOrder(tree)
-	fmt.Println("In Order")
-	InOrder(tree)
-	fmt.Println("Post Order")
-	PostOrder(tree)
 }
